@@ -14,7 +14,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('welcome');
+        $products = product::latest()->paginate(5);
+
+        return view('products.index',compact('products'));//compact is a php function that creates an array of given variable value
     }
 
     /**
