@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         $products = product::latest()->paginate(5);
 
-        return view('products.index',compact('products'));//compact is a php function that creates an array of given variable value
+        return view('products.index', compact('products'))->with(request()->input('page'));//compact is a php function that creates an array of given variable value
     }
 
     /**
@@ -58,7 +58,8 @@ class ProductController extends Controller
      */
     public function show(product $product)
     {
-        //
+        $item = product::find($product);
+        return view('products.show',compact('product'));
     }
 
     /**
@@ -69,7 +70,7 @@ class ProductController extends Controller
      */
     public function edit(product $product)
     {
-        //
+        return view('products.edit',compact('product'));
     }
 
     /**
@@ -81,7 +82,17 @@ class ProductController extends Controller
      */
     public function update(Request $request, product $product)
     {
-        //
+        //validate the input
+        $request->validate([
+            'name'=>'required',
+            'detail'=>'required'
+        ]);
+
+    //create new product in the database
+        $product->update($request->all());
+
+    //redirect the user and send friendly message
+        return redirect()->route('products.index')->with('success','product created sucessfully');
     }
 
     /**
@@ -92,6 +103,10 @@ class ProductController extends Controller
      */
     public function destroy(product $product)
     {
-        //
+        //delete the product from the database
+        $product->delete();
+
+        //redirect the user and display success message
+        return redirect()->route('products.index')->with('success','product ' . $product->id. ' deleted sucessfully');
     }
 }
